@@ -83,7 +83,7 @@ SENSOR_DEFINITIONS: tuple[VigieEauSensorEntityDescription, ...] = (
             "lavage.+particuliers",
             "lavage.+professionnels.+portique",
             "lavage.+professionnels.+haute pression",
-            "lavage.+(station|véhicules)",
+            # "lavage.+(station|véhicules)",
         ],
     ),
     VigieEauSensorEntityDescription(
