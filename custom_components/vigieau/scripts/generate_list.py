@@ -1,12 +1,16 @@
 import aiohttp
 import asyncio
 import json
+import sys
 from pathlib import Path
+from os import path
 
-# from vigieau.const import GEOAPI_GOUV_URL,BASE_URL
 
-BASE_URL = "https://api.vigieau.beta.gouv.fr"
-GEOAPI_GOUV_URL = "https://geo.api.gouv.fr/communes?"
+current_dir = path.dirname(__file__)
+parent_dir = path.dirname(current_dir)
+sys.path.append(".")
+sys.path.append(parent_dir)
+from custom_components.vigieau.const import GEOAPI_GOUV_URL, BASE_URL
 
 
 async def get_insee_list():
@@ -52,7 +56,7 @@ async def main():
     finaldata = json.dumps(
         restriction_list, ensure_ascii=False
     )  # https://stackoverflow.com/questions/35582528/python-encoding-and-json-dumps
-    file = Path("/workspaces/vigieau/custom_components/vigieau/tests/newfile.json")
+    file = Path(f"{current_dir}/full_usage_list.json")
 
     with open(file, "w", encoding="utf-8") as outfile:
         outfile.write(finaldata)
