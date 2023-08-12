@@ -51,6 +51,9 @@ def duplicate_inside_category(input_filename=MatcherResultFilename, for_test=Fal
 
     if not for_test:
         print(final_result)
+        newFile = Path(f"{current_dir}/duplicate_by_category.json")
+        with open(newFile, "w", encoding="utf-8") as outfile:
+            outfile.write(json.dumps(final_result))
     return final_result
 
 
@@ -71,6 +74,9 @@ def duplicate_between_categories(input_filename=MatcherResultFilename, for_test=
             final_result.append(result)
     if not for_test:
         print(final_result)
+        newFile = Path(f"{current_dir}/duplicate_between_categories.json")
+        with open(newFile, "w", encoding="utf-8") as outfile:
+            outfile.write(json.dumps(final_result))
     return final_result
 
 
