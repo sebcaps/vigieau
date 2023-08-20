@@ -10,6 +10,7 @@ from custom_components.vigieau.scripts.verify_category import (
     duplicate_inside_category,
     duplicate_between_categories,
     generate_matcher_by_category,
+    verify_matcher
 )
 import unittest
 from pathlib import Path
@@ -29,21 +30,8 @@ class TestRegexp(unittest.TestCase):
             with self.subTest(
                 msg="One matcher failed"
             ):  # For soft fail, ref https://stackoverflow.com/questions/4732827/continuing-in-pythons-unittest-when-an-assertion-fails
-                found = False
-                for (
-                    sensor
-                ) in (
-                    SENSOR_DEFINITIONS
-                ):  # We may have to create a function rather than copy/paste, but it's a 'simple re.search....
-                    for matcher in sensor.matchers:
-                        if re.search(
-                            matcher,
-                            restriction["usage"],
-                            re.IGNORECASE,
-                        ):
-                            found = True
                 self.assertTrue(
-                    found,
+                    verify_matcher(restriction,True),
                     f"Value **{restriction['usage']}** in category **{restriction['thematique']}** not found in matcher",
                 )  # Check for one usage if it has been found
 

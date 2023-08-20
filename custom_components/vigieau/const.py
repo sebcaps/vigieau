@@ -46,7 +46,12 @@ SENSOR_DEFINITIONS: tuple[VigieEauSensorEntityDescription, ...] = (
         icon="mdi:fountain",
         category="fountains",
         key="fountains",
-        matchers=["alimentation des fontaines.+", "douches des plages.+", "fontaines"],
+        matchers=[
+            "alimentation.+fontaines.+",
+            "douches (des|de) plages.+",
+            "fontaines.+potable.+",
+            "fonctionnement.+fontaines.+",
+        ],
     ),
     VigieEauSensorEntityDescription(
         name="Arrosage des jardins potagers",
@@ -54,10 +59,10 @@ SENSOR_DEFINITIONS: tuple[VigieEauSensorEntityDescription, ...] = (
         category="potagers",
         key="potagers",
         matchers=[
-            "Arrosage des jardins potagers",
+            "Arrosage des (jardins)+.+(potager(s)*)",
             "Arrosage des potagers",
-            "arrosage.+arbres.+",
-            "arrosage.+plant.+",
+            "arrosage.+(^plant(s)*$|arbres|suspension|jeunes plants|^jardin(s)*$|espaces arborés)",
+            "Dispositifs de récupération des eaux de pluie",
         ],
     ),
     VigieEauSensorEntityDescription(
@@ -65,7 +70,11 @@ SENSOR_DEFINITIONS: tuple[VigieEauSensorEntityDescription, ...] = (
         icon="mdi:road",
         category="roads",
         key="roads",
-        matchers=["trottoirs", "voiries|voieries"],
+        matchers=[
+            "voiries|voieries|voies publique|voirie",
+            "arrosage.+poussière.+",
+            "arrosage.+manifestation.+",
+        ],
     ),
     VigieEauSensorEntityDescription(
         name="Arrosage des pelouses",
@@ -73,12 +82,9 @@ SENSOR_DEFINITIONS: tuple[VigieEauSensorEntityDescription, ...] = (
         category="lawn",
         key="lawn",
         matchers=[
-            "pelouses",
-            "jardins d'agrément",
-            "massifs fleuris",
-            "Arrosage des espaces verts",
             "surface.+sportives.+",
-            "arrosage.+massif.+",
+            "arrosage.+(massif|haies|espaces verts|pelouse|jardins d'agrément|plantation).*",
+            #"arrosage.+(massif|jardin|haies|espaces verts|pelouse|jardins d'agrément).*",
         ],
     ),
     VigieEauSensorEntityDescription(
@@ -87,11 +93,7 @@ SENSOR_DEFINITIONS: tuple[VigieEauSensorEntityDescription, ...] = (
         category="car_wash",
         key="car_wash",
         matchers=[
-            "lavage.+particuliers",
-            "lavage.+professionnels.+portique",
-            "lavage.+professionnels.+haute pression",
-            "lavage.+(station|véhicules)",
-            "lavage.+professionnel.+",
+            "lavage.+(véhicule|véhicules)*.+(particuliers|professionnel)*.+"
         ],
     ),
     VigieEauSensorEntityDescription(
@@ -101,20 +103,21 @@ SENSOR_DEFINITIONS: tuple[VigieEauSensorEntityDescription, ...] = (
         key="nautical_vehicules",
         matchers=[
             "lavage.+engins nautiques.+professionnels",
-            "Nettoyage.+embarcation",
+            "Nettoyage.+(embarcation|bateaux)",
             "lavage.+bateau.+",
+            "véhicules, engins nautiques",
+            "Lavage d’engins nautiques",
         ],
     ),
     VigieEauSensorEntityDescription(
-        name="Lavage des toitures, façades",
+        name="Lavage des toitures façades",
         icon="mdi:home-roof",
         category="roof_clean",
         key="roof_clean",
         matchers=[
-            "toitures",
-            "façades",
+            "(nettoyage|lavage).+(toitures|façade|terrasse)",
+            # "façades",
             "nettoyage.+bâtiments.+",
-            "nettoyage.+terrasse.+",
         ],
     ),
     VigieEauSensorEntityDescription(
@@ -123,11 +126,11 @@ SENSOR_DEFINITIONS: tuple[VigieEauSensorEntityDescription, ...] = (
         category="pool",
         key="pool",
         matchers=[
-            "remplissage.+piscines.+(familial|privé)",
-            "vidange.+piscines",
-            "piscines privées",  # Piscines privées et bains à remous de plus de 1m3
-            "piscines non collectives",  # Remplissage et vidange de piscines non collectives (de plus de 1 m3)
+            "(remplissage|vidange)*(piscines|piscine).+(familial|privé|privées|collective)*",
+            # "piscines non collectives",  # Remplissage et vidange de piscines non collectives (de plus de 1 m3)
             "baignades.+",
+            "(structure|structures) gonflables",
+            "^(fontaine).+jeux d'eau", #to avoid duplicate with fontaine, however this is a hack, should use (?!fontaine)
         ],
     ),
     VigieEauSensorEntityDescription(
@@ -136,11 +139,10 @@ SENSOR_DEFINITIONS: tuple[VigieEauSensorEntityDescription, ...] = (
         category="ponds",
         key="ponds",
         matchers=[
-            "remplissage.+plan.* d.eau",
-            "vidange.+plan.* d.eau",
-            "alimentation.+plan.* d.eau",
-            "alimentation.+bassin.+",
+            "^(remplissage|vidange|alimentation)((?!fontaine).)*(plan.*d.eau|bassin)*$",
             "lestage",
+            # "Remplissage tonne de chasse",
+            "(manoeuvre|manœuvre).+vannes.+barrages",  # Manoeuvre de vannes des seuils et barrages
         ],
     ),
     VigieEauSensorEntityDescription(
@@ -149,14 +151,18 @@ SENSOR_DEFINITIONS: tuple[VigieEauSensorEntityDescription, ...] = (
         category="river_rate",
         key="river_rate",
         matchers=[
-            "ouvrage.+cours d.eau",
-            "travaux.+cours d.eau",
-            "manoeuvre.+vannes",  # Manoeuvre de vannes des seuils et barrages
+            # "ouvrage.+cours d.eau",
+            "(manoeuvre|manœuvre).+vannes.+(moulin|réseau)*",  # Manoeuvre de vannes des seuils et barrages
             "Gestion des ouvrages",  # FIXME: we should probably match with the category as well
-            "travaux.+rivière",
+            "travaux.+(rivière|cours d.eau)",
             "rabattement.+nappe.+",
             "faucardage.+",
+            "faucardement",
             "manoeuvre.+d.ouvrage.+",
+            "orpaillage",
+            "seuil.+provisoire",
+            "perturbations physique.+cours d.eau",
+            "pratiques.+lit.+impact.+",
         ],
     ),
     VigieEauSensorEntityDescription(
@@ -164,7 +170,7 @@ SENSOR_DEFINITIONS: tuple[VigieEauSensorEntityDescription, ...] = (
         icon="mdi:ferry",
         category="river_movement",
         key="river_movement",
-        matchers=["Navigation fluviale"],
+        matchers=["Navigation fluviale", "canyoning"],
     ),
     VigieEauSensorEntityDescription(
         name="Arrosage des golfs",
@@ -181,10 +187,22 @@ SENSOR_DEFINITIONS: tuple[VigieEauSensorEntityDescription, ...] = (
         matchers=[
             "Prélèvement en canaux",
             "Prélèvements dans le milieu naturel.+",
-            "prélèvements.+cours d.eau.+",
+            "(prélèvements|prélèvement).+cours d.eau.+",
+            "prélèvements.+fonctionnement.+",
             "prélèvement.+hydraulique.+",
             "alimentation.+canaux.+",
-            "",
+            "Activités cynégétiques",
+            # "Prélèvement d’eau superficielle",
+            "Prélèvements énergétiques",
+            "Création de prélèvements",
+            "mares de gabion" #Prélèvements pour l’alimentation de plans d’eau dont les mares de gabion
         ],
+    ),
+    VigieEauSensorEntityDescription(
+        name="Abreuvement des animaux",
+        icon="mdi:cow",
+        category="animaux",
+        key="animaux",
+        matchers=["abreuvement"],
     ),
 )

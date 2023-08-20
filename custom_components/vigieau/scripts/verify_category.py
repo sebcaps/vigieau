@@ -13,6 +13,20 @@ from custom_components.vigieau.const import SENSOR_DEFINITIONS
 
 MatcherResultFilename = "matcher_by_category.json"
 
+def verify_matcher(restriction:dict,for_test=False):
+    """ Return true if restriction['usage'] is found in matcher"""
+    found = False
+    for (sensor) in (SENSOR_DEFINITIONS):  # We may have to create a function rather than copy/paste, but it's a 'simple re.search....
+        for matcher in sensor.matchers:
+            if re.search(matcher,restriction["usage"],re.IGNORECASE,):
+                found = True
+    # if not for_test:
+    #     print(f"Value **{restriction['usage']}** in category **{restriction['thematique']}** not found in matcher",)
+    #     newFile = Path(f"{current_dir}/notinmatcher.json")
+    #     with open(newFile, "w", encoding="utf-8") as outfile:
+    #         outfile.write(json.dumps({'thematique':{restriction['thematique']},'usage':restriction['usage']}))
+
+    return found
 
 def generate_matcher_by_category(
     inputFileName="full_usage_list.json", outFileName=MatcherResultFilename
